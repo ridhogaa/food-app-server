@@ -30,25 +30,26 @@ public class UserService {
         user.setPassword(userRequest.getPassword());
 
         if (userRepository.existsByEmailAddress(userRequest.getEmailAddress())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exist");
         }
 
         if (userRepository.existsByUsername(userRequest.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already registered");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exist");
         }
         userRepository.save(user);
 
-        var response = new UserResponse();
-        response.setUsername(user.getUsername());
-        response.setEmailAddress(user.getEmailAddress());
-        return response;
+        return UserResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .emailAddress(user.getEmailAddress())
+                .build();
     }
 
     public List<UserResponse> findAll() {
         var response = new ArrayList<UserResponse>();
         userRepository.findAll().forEach(user -> {
             log.info("USER : {}", user);
-            response.add(new UserResponse(user.getUsername(), user.getEmailAddress()));
+            response.add(new UserResponse(user.getId(), user.getUsername(), user.getEmailAddress()));
         });
         return response;
     }
@@ -57,6 +58,14 @@ public class UserService {
         validationService.validate(request);
         log.info("REQUEST : {}", request);
         User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID User not found"));
+
+        if (userRepository.existsByEmailAddress(request.getEmailAddress())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exist");
+        }
+
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exist");
+        }
 
         if (Objects.nonNull(request.getUsername())) {
             user.setUsername(request.getUsername());

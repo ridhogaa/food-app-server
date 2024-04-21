@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class MerchantRequest {
     @NotBlank(message = "Must not empty")
     private String name;
