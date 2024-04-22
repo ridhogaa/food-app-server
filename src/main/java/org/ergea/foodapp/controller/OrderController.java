@@ -1,9 +1,11 @@
 package org.ergea.foodapp.controller;
 
 import org.ergea.foodapp.dto.BaseResponse;
+import org.ergea.foodapp.dto.OrderDetailRequest;
 import org.ergea.foodapp.dto.OrderRequest;
 import org.ergea.foodapp.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,5 +36,16 @@ public class OrderController {
     @DeleteMapping(path = "{id}")
     public ResponseEntity<?> delete(@PathVariable UUID id) {
         return ResponseEntity.ok(BaseResponse.success(orderService.delete(id), "Success Delete Order"));
+    }
+
+    @GetMapping(path = "details")
+    public ResponseEntity<?> findAllDetails(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(BaseResponse.success(orderService.findAllDetails(PageRequest.of(page, size)).getContent(), "Success Get All Order Details"));
+    }
+
+    @PostMapping(path = "details")
+    public ResponseEntity<?> createDetail(@RequestBody OrderDetailRequest request) {
+        return ResponseEntity.ok(BaseResponse.success(orderService.createDetail(request), "Success create order detail"));
     }
 }

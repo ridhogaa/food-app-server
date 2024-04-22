@@ -1,13 +1,22 @@
 package org.ergea.foodapp.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.ergea.foodapp.dto.OrderDetailRequest;
+import org.ergea.foodapp.dto.OrderDetailResponse;
 import org.ergea.foodapp.dto.OrderRequest;
 import org.ergea.foodapp.dto.OrderResponse;
 import org.ergea.foodapp.entity.Order;
+import org.ergea.foodapp.entity.OrderDetail;
+import org.ergea.foodapp.entity.Product;
 import org.ergea.foodapp.entity.User;
+import org.ergea.foodapp.mapper.OrderMapper;
+import org.ergea.foodapp.repository.OrderDetailRepository;
 import org.ergea.foodapp.repository.OrderRepository;
+import org.ergea.foodapp.repository.ProductRepository;
 import org.ergea.foodapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,6 +38,12 @@ public class OrderService {
     private UserRepository userRepository;
 
     @Autowired
+    private OrderDetailRepository orderDetailRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
     private ValidationService validationService;
 
     public OrderResponse create(OrderRequest request) {
@@ -41,19 +56,14 @@ public class OrderService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id " + request.getUserId()));
         order.setUser(user);
         orderRepository.save(order);
-        return OrderResponse.builder()
-                .id(order.getId())
-                .orderTime(order.getOrderTime())
-                .destinationAddress(order.getDestinationAddress())
-                .isComplete(order.getIsComplete())
-                .build();
+        return new OrderMapper().toOrderResponse(order);
     }
 
     public List<OrderResponse> findAll() {
         var response = new ArrayList<OrderResponse>();
         orderRepository.findAll().forEach(order -> {
             log.info("ORDER {}", order);
-            response.add(new OrderResponse(order.getId(), order.getOrderTime(), order.getDestinationAddress(), order.getIsComplete()));
+            response.add(new OrderMapper().toOrderResponse(order));
         });
         return response;
     }
@@ -75,23 +85,36 @@ public class OrderService {
         order.setUser(order.getUser());
 
         orderRepository.save(order);
+        log.info("REQUEST : {}", orderRepository.save(order));
 
-        return OrderResponse.builder()
-                .id(order.getId())
-                .orderTime(order.getOrderTime())
-                .destinationAddress(order.getDestinationAddress())
-                .isComplete(order.getIsComplete())
-                .build();
+        return new OrderMapper().toOrderResponse(order);
     }
 
     public OrderResponse delete(UUID id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID Order not found"));
         orderRepository.delete(order);
-        return OrderResponse.builder()
-                .id(order.getId())
-                .orderTime(order.getOrderTime())
-                .destinationAddress(order.getDestinationAddress())
-                .isComplete(order.getIsComplete())
-                .build();
+        return new OrderMapper().toOrderResponse(order);
+    }
+
+    public Page<OrderDetailResponse> findAllDetails(Pageable pageable) {
+        return orderDetailRepository.findAll(pageable).map(orderDetail -> new OrderMapper().toOrderDetailResponse(orderDetail));
+    }
+
+    public OrderDetailResponse createDetail(OrderDetailRequest request) {
+        validationService.validate(request);
+
+        OrderDetail orderDetail = new OrderDetail();
+        orderDetail.setQuantity(request.getQuantity());
+        orderDetail.setTotalPrice(request.getTotalPrice());
+
+        Order order = orderRepository.findById(request.getOrderId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found with id " + request.getOrderId()));
+        orderDetail.setOrder(order);
+
+        Product product = productRepository.findById(request.getProductId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found with id " + request.getProductId()));
+        orderDetail.setProduct(product);
+
+        orderDetailRepository.save(orderDetail);
+
+        return new OrderMapper().toOrderDetailResponse(orderDetail);
     }
 }
