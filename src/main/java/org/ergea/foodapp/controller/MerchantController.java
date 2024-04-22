@@ -22,8 +22,8 @@ public class MerchantController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAll() {
-        return ResponseEntity.ok(BaseResponse.success(merchantService.findAll(), "Success Get All Merchants"));
+    public ResponseEntity<?> findAll(@RequestParam(required = false) Boolean isOpen) {
+        return ResponseEntity.ok(BaseResponse.success(merchantService.findAll(isOpen), "Success Get All Merchants"));
     }
 
     @PutMapping(path = "{id}")

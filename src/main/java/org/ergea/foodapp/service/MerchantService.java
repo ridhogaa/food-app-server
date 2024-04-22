@@ -32,11 +32,17 @@ public class MerchantService {
         return getMerchantResponse(request, merchant);
     }
 
-    public List<MerchantResponse> findAll() {
+    public List<MerchantResponse> findAll(Boolean isOpen) {
         var response = new ArrayList<MerchantResponse>();
-        merchantRepository.findAll().forEach(
-                merchant -> response.add(new MerchantMapper().toMerchantResponse(merchant))
-        );
+        if (isOpen != null) {
+            merchantRepository.findAllByIsOpen(isOpen).forEach(
+                    merchant -> response.add(new MerchantMapper().toMerchantResponse(merchant))
+            );
+        } else {
+            merchantRepository.findAll().forEach(
+                    merchant -> response.add(new MerchantMapper().toMerchantResponse(merchant))
+            );
+        }
         return response;
     }
 
