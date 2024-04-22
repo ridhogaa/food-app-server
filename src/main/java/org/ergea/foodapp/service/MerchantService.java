@@ -5,6 +5,7 @@ import org.ergea.foodapp.dto.MerchantRequest;
 import org.ergea.foodapp.dto.MerchantResponse;
 import org.ergea.foodapp.entity.Merchant;
 import org.ergea.foodapp.entity.User;
+import org.ergea.foodapp.mapper.MerchantMapper;
 import org.ergea.foodapp.repository.MerchantRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class MerchantService {
     public List<MerchantResponse> findAll() {
         var response = new ArrayList<MerchantResponse>();
         merchantRepository.findAll().forEach(
-                merchant -> response.add(new MerchantResponse(merchant.getId().toString(), merchant.getName(), merchant.getLocation(), merchant.getIsOpen()))
+                merchant -> response.add(new MerchantMapper().toMerchantResponse(merchant))
         );
         return response;
     }
@@ -48,12 +49,7 @@ public class MerchantService {
     public MerchantResponse delete(UUID id) {
         Merchant merchant = merchantRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID Merchant not found"));
         merchantRepository.delete(merchant);
-        return MerchantResponse.builder()
-                .id(merchant.getId().toString())
-                .name(merchant.getName())
-                .location(merchant.getLocation())
-                .isOpen(merchant.getIsOpen())
-                .build();
+        return new MerchantMapper().toMerchantResponse(merchant);
     }
 
     private MerchantResponse getMerchantResponse(MerchantRequest request, Merchant merchant) {
@@ -61,11 +57,6 @@ public class MerchantService {
         merchant.setLocation(request.getLocation());
         merchant.setIsOpen(request.getIsOpen());
         merchantRepository.save(merchant);
-        return MerchantResponse.builder()
-                .id(merchant.getId().toString())
-                .name(request.getName())
-                .location(request.getLocation())
-                .isOpen(request.getIsOpen())
-                .build();
+        return new MerchantMapper().toMerchantResponse(merchant);
     }
 }
