@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ergea.foodapp.dto.UserRequest;
 import org.ergea.foodapp.dto.UserResponse;
 import org.ergea.foodapp.entity.User;
+import org.ergea.foodapp.mapper.UserMapper;
 import org.ergea.foodapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,18 +39,14 @@ public class UserService {
         }
         userRepository.save(user);
 
-        return UserResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .emailAddress(user.getEmailAddress())
-                .build();
+        return new UserMapper().toUserResponse(user);
     }
 
     public List<UserResponse> findAll() {
         var response = new ArrayList<UserResponse>();
         userRepository.findAll().forEach(user -> {
             log.info("USER : {}", user);
-            response.add(new UserResponse(user.getId(), user.getUsername(), user.getEmailAddress()));
+            response.add(new UserMapper().toUserResponse(user));
         });
         return response;
     }
@@ -80,12 +77,14 @@ public class UserService {
         }
 
         userRepository.save(user);
-        return UserResponse.builder().emailAddress(user.getEmailAddress()).username(user.getUsername()).build();
+
+        return new UserMapper().toUserResponse(user);
     }
 
     public UserResponse delete(UUID id) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID User not found"));
         userRepository.delete(user);
-        return UserResponse.builder().emailAddress(user.getEmailAddress()).username(user.getUsername()).build();
+
+        return new UserMapper().toUserResponse(user);
     }
 }
