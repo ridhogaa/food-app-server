@@ -3,10 +3,9 @@ package org.ergea.foodapp.service;
 import lombok.extern.slf4j.Slf4j;
 import org.ergea.foodapp.dto.ProductRequest;
 import org.ergea.foodapp.dto.ProductResponse;
-import org.ergea.foodapp.dto.UserResponse;
 import org.ergea.foodapp.entity.Merchant;
 import org.ergea.foodapp.entity.Product;
-import org.ergea.foodapp.entity.User;
+import org.ergea.foodapp.mapper.ProductMapper;
 import org.ergea.foodapp.repository.MerchantRepository;
 import org.ergea.foodapp.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -43,11 +41,7 @@ public class ProductService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Merchant not found with id " + request.getMerchantId()));
         product.setMerchant(merchant);
         productRepository.save(product);
-        return ProductResponse.builder()
-                .id(product.getId())
-                .name(request.getName())
-                .price(request.getPrice())
-                .build();
+        return new ProductMapper().toProductResponse(product);
     }
 
     public List<ProductResponse> findAll() {
@@ -55,7 +49,7 @@ public class ProductService {
         productRepository.findAll().forEach(
                 product -> {
                     log.info("PRODUCT : {}", product);
-                    response.add(new ProductResponse(product.getId(), product.getName(), product.getPrice()));
+                    response.add(new ProductMapper().toProductResponse(product));
                 }
         );
         return response;
@@ -78,20 +72,12 @@ public class ProductService {
 
         productRepository.save(product);
 
-        return ProductResponse.builder()
-                .id(product.getId())
-                .name(request.getName())
-                .price(request.getPrice())
-                .build();
+        return new ProductMapper().toProductResponse(product);
     }
 
     public ProductResponse delete(UUID id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID Product not found"));
         productRepository.delete(product);
-        return ProductResponse.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .price(product.getPrice())
-                .build();
+        return new ProductMapper().toProductResponse(product);
     }
 }
