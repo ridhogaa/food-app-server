@@ -3,8 +3,10 @@ package org.ergea.foodapp.mapper;
 
 import org.ergea.foodapp.dto.UserResponse;
 import org.ergea.foodapp.entity.User;
+import org.springframework.stereotype.Component;
 
-public final class UserMapper {
+@Component
+public class UserMapper {
     public UserResponse toUserResponse(User user) {
         return UserResponse.builder()
                 .id(user.getId())

@@ -4,8 +4,10 @@ import org.ergea.foodapp.dto.OrderDetailResponse;
 import org.ergea.foodapp.dto.OrderResponse;
 import org.ergea.foodapp.entity.Order;
 import org.ergea.foodapp.entity.OrderDetail;
+import org.springframework.stereotype.Component;
 
-public final class OrderMapper {
+@Component
+public class OrderMapper {
     public OrderResponse toOrderResponse(Order order) {
         return OrderResponse.builder()
                 .id(order.getId())
