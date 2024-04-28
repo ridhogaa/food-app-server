@@ -29,7 +29,7 @@ public class OrderController {
     }
 
     @PutMapping(path = "{id}")
-    public ResponseEntity<?> update(@PathVariable UUID id, OrderRequest request) {
+    public ResponseEntity<?> update(@PathVariable UUID id, @RequestBody OrderRequest request) {
         return ResponseEntity.ok(BaseResponse.success(orderService.update(id, request), "Success Update Order"));
     }
 
