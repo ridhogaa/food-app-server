@@ -80,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
         validationService.validate(request);
 
         log.info("REQUEST : {}", request);
-        Order order = orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID Order not found"));
+        Order order = orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID Order not found"));
 
         if (Objects.nonNull(request.getDestinationAddress())) {
             order.setDestinationAddress(request.getDestinationAddress());
@@ -100,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse delete(UUID id) {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID Order not found"));
+        Order order = orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID Order not found"));
         orderRepository.delete(order);
         return orderMapper.toOrderResponse(order);
     }

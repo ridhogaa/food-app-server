@@ -66,7 +66,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse update(UUID id, ProductRequest request) {
         validationService.validate(request);
         log.info("REQUEST : {}", request);
-        Product product = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID Product not found"));
+        Product product = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID Product not found"));
 
         if (Objects.nonNull(request.getName())) {
             product.setName(request.getName());
@@ -85,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse delete(UUID id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID Product not found"));
+        Product product = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID Product not found"));
         productRepository.delete(product);
         return productMapper.toProductResponse(product);
     }

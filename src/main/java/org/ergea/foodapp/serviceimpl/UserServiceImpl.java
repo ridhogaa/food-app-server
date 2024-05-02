@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse update(UUID id, UserRequest request) {
         validationService.validate(request);
         log.info("REQUEST : {}", request);
-        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID User not found"));
 
         if (userRepository.existsByEmailAddress(request.getEmailAddress())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exist");
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse delete(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID User not found"));
         userRepository.deleteQuerySP(user.getId());
 
         return userMapper.toUserResponse(user);
@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse findById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID User not found"));
         userRepository.findByIdQuerySP(user.getId());
         return userMapper.toUserResponse(user);
     }
