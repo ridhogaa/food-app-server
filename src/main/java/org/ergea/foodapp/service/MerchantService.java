@@ -16,6 +16,4 @@ public interface MerchantService {
 
     MerchantResponse delete(UUID id);
 
-    MerchantResponse findById(UUID id);
-
 }

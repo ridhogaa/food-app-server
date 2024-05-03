@@ -34,13 +34,7 @@ public class MerchantServiceImpl implements MerchantService {
     public MerchantResponse create(MerchantRequest request) {
         validationService.validate(request);
         Merchant merchant = new Merchant();
-        var randomUUID = UUID.randomUUID();
-        merchant.setId(randomUUID);
-        merchant.setName(request.getName());
-        merchant.setLocation(request.getLocation());
-        merchant.setIsOpen(request.getIsOpen());
-        merchantRepository.createQuerySP(randomUUID, request.getName(), request.getLocation(), request.getIsOpen());
-        return merchantMapper.toMerchantResponse(merchant);
+        return getMerchantResponse(request, merchant);
     }
 
     @Override
@@ -61,18 +55,14 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public MerchantResponse update(UUID id, MerchantRequest request) {
         validationService.validate(request);
-        Merchant merchant = merchantRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID Merchant not found"));
-        merchant.setName(request.getName());
-        merchant.setLocation(request.getLocation());
-        merchant.setIsOpen(request.getIsOpen());
-        merchantRepository.updateQuerySP(id, request.getName(), request.getLocation(), request.getIsOpen());
-        return merchantMapper.toMerchantResponse(merchant);
+        Merchant merchant = merchantRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID Merchant not found"));
+        return getMerchantResponse(request, merchant);
     }
 
     @Override
     public MerchantResponse delete(UUID id) {
         Merchant merchant = merchantRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID Merchant not found"));
-        merchantRepository.deleteQuerySP(merchant.getId());
+        merchantRepository.delete(merchant);
         return merchantMapper.toMerchantResponse(merchant);
     }
 
