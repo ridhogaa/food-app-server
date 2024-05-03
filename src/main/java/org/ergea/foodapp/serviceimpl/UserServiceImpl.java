@@ -35,8 +35,6 @@ public class UserServiceImpl implements UserService {
     public UserResponse create(UserRequest userRequest) {
         validationService.validate(userRequest);
         User user = new User();
-        var randomUUID = UUID.randomUUID();
-        user.setId(randomUUID);
         user.setUsername(userRequest.getUsername());
         user.setEmailAddress(userRequest.getEmailAddress());
         user.setPassword(userRequest.getPassword());
@@ -48,7 +46,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByUsername(userRequest.getUsername())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already exist");
         }
-        userRepository.createQuerySP(randomUUID, user.getUsername(), user.getEmailAddress(), user.getPassword());
+        userRepository.save(user);
 
         return userMapper.toUserResponse(user);
     }
@@ -89,23 +87,16 @@ public class UserServiceImpl implements UserService {
             user.setPassword(request.getPassword());
         }
 
-        userRepository.updateQuerySP(id, user.getUsername(), user.getEmailAddress(), user.getPassword());
+        userRepository.save(user);
 
         return userMapper.toUserResponse(user);
     }
 
     @Override
     public UserResponse delete(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID User not found"));
-        userRepository.deleteQuerySP(user.getId());
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID User not found"));
+        userRepository.delete(user);
 
-        return userMapper.toUserResponse(user);
-    }
-
-    @Override
-    public UserResponse findById(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID User not found"));
-        userRepository.findByIdQuerySP(user.getId());
         return userMapper.toUserResponse(user);
     }
 

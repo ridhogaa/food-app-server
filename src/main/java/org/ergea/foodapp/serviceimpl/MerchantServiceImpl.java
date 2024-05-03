@@ -66,13 +66,6 @@ public class MerchantServiceImpl implements MerchantService {
         return merchantMapper.toMerchantResponse(merchant);
     }
 
-    @Override
-    public MerchantResponse findById(UUID id) {
-        Merchant merchant = merchantRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID Merchant not found"));
-        merchantRepository.findByIdQuerySP(merchant.getId());
-        return merchantMapper.toMerchantResponse(merchant);
-    }
-
     private MerchantResponse getMerchantResponse(MerchantRequest request, Merchant merchant) {
         merchant.setName(request.getName());
         merchant.setLocation(request.getLocation());
