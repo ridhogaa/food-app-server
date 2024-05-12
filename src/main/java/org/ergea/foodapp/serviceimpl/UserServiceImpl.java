@@ -1,14 +1,19 @@
 package org.ergea.foodapp.serviceimpl;
 
+import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
+import org.ergea.foodapp.dto.MerchantResponse;
 import org.ergea.foodapp.dto.UserRequest;
 import org.ergea.foodapp.dto.UserResponse;
+import org.ergea.foodapp.entity.Merchant;
 import org.ergea.foodapp.entity.User;
 import org.ergea.foodapp.mapper.UserMapper;
 import org.ergea.foodapp.repository.UserRepository;
 import org.ergea.foodapp.service.UserService;
 import org.ergea.foodapp.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -52,9 +57,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> findAll() {
+    public List<UserResponse> findAll(Pageable pageable, String username, String emailAddress) {
+        Specification<User> spec = ((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (username != null && !username.isEmpty()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("username")), "%" + username.toLowerCase() + "%"));
+            }
+            if (emailAddress != null && !emailAddress.isEmpty()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("emailAddress")), "%" + emailAddress.toLowerCase() + "%"));
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        });
         var response = new ArrayList<UserResponse>();
-        userRepository.findAll().forEach(user -> {
+        userRepository.findAll(spec, pageable).forEach(user -> {
             log.info("USER : {}", user);
             response.add(userMapper.toUserResponse(user));
         });
@@ -97,6 +112,12 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID User not found"));
         userRepository.delete(user);
 
+        return userMapper.toUserResponse(user);
+    }
+
+    @Override
+    public UserResponse findById(UUID id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID User not found"));
         return userMapper.toUserResponse(user);
     }
 
