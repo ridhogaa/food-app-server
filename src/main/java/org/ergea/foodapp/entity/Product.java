@@ -28,7 +28,7 @@ public class Product {
     @Column(name = "price")
     private Double price;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "merchant_id")
     private Merchant merchant;
 }

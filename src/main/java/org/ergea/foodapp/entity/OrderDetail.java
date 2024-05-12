@@ -20,11 +20,11 @@ public class OrderDetail {
     @Column(updatable = false, nullable = false)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     private Product product;
 
