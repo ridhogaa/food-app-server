@@ -1,16 +1,20 @@
 package org.ergea.foodapp.serviceimpl;
 
+import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.ergea.foodapp.dto.ProductRequest;
 import org.ergea.foodapp.dto.ProductResponse;
 import org.ergea.foodapp.entity.Merchant;
 import org.ergea.foodapp.entity.Product;
+import org.ergea.foodapp.entity.User;
 import org.ergea.foodapp.mapper.ProductMapper;
 import org.ergea.foodapp.repository.MerchantRepository;
 import org.ergea.foodapp.repository.ProductRepository;
 import org.ergea.foodapp.service.ProductService;
 import org.ergea.foodapp.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -51,9 +55,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponse> findAll() {
+    public List<ProductResponse> findAll(Pageable pageable, String name, Double price) {
+        Specification<Product> spec = ((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (name != null && !name.isEmpty()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+            }
+            if (price != null) {
+                predicates.add(criteriaBuilder.equal(root.get("price"), price));
+            }
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        });
         var response = new ArrayList<ProductResponse>();
-        productRepository.findAll().forEach(
+        productRepository.findAll(spec, pageable).forEach(
                 product -> {
                     log.info("PRODUCT : {}", product);
                     response.add(productMapper.toProductResponse(product));
@@ -87,6 +101,12 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse delete(UUID id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID Product not found"));
         productRepository.delete(product);
+        return productMapper.toProductResponse(product);
+    }
+
+    @Override
+    public ProductResponse findById(UUID id) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID Product not found"));
         return productMapper.toProductResponse(product);
     }
 }
