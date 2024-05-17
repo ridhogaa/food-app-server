@@ -19,5 +19,6 @@ public class OrderRequest {
     private String destinationAddress;
     @NotNull(message = "must not be null")
     private Boolean isComplete;
+    @NotNull(message = "must not empty")
     private UUID userId;
 }

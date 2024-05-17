@@ -31,7 +31,7 @@ public class Order {
     @Column(name = "completed")
     private Boolean isComplete;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 }
