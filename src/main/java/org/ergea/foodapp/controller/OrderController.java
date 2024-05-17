@@ -1,5 +1,6 @@
 package org.ergea.foodapp.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ergea.foodapp.dto.BaseResponse;
 import org.ergea.foodapp.dto.OrderDetailRequest;
 import org.ergea.foodapp.dto.OrderRequest;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Tag(name = "Order")
 @RestController
 @RequestMapping("v1/orders")
 public class OrderController {
