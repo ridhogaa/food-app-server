@@ -1,11 +1,10 @@
 package org.ergea.foodapp.serviceimpl;
 
-import jakarta.persistence.criteria.Predicate;
+import javax.persistence.criteria.Predicate;
+
 import lombok.extern.slf4j.Slf4j;
-import org.ergea.foodapp.dto.MerchantResponse;
 import org.ergea.foodapp.dto.UserRequest;
 import org.ergea.foodapp.dto.UserResponse;
-import org.ergea.foodapp.entity.Merchant;
 import org.ergea.foodapp.entity.User;
 import org.ergea.foodapp.mapper.UserMapper;
 import org.ergea.foodapp.repository.UserRepository;
@@ -68,7 +67,7 @@ public class UserServiceImpl implements UserService {
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
-        var response = new ArrayList<UserResponse>();
+        List<UserResponse> response = new ArrayList<UserResponse>();
         userRepository.findAll(spec, pageable).forEach(user -> {
             log.info("USER : {}", user);
             response.add(userMapper.toUserResponse(user));
@@ -120,5 +119,4 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID User not found"));
         return userMapper.toUserResponse(user);
     }
-
 }

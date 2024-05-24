@@ -1,6 +1,7 @@
 package org.ergea.foodapp.serviceimpl;
 
-import jakarta.persistence.criteria.Predicate;
+import javax.persistence.criteria.Predicate;
+
 import lombok.extern.slf4j.Slf4j;
 import org.ergea.foodapp.dto.MerchantRequest;
 import org.ergea.foodapp.dto.MerchantResponse;
@@ -55,7 +56,7 @@ public class MerchantServiceImpl implements MerchantService {
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
-        var response = new ArrayList<MerchantResponse>();
+        List<MerchantResponse> response = new ArrayList<MerchantResponse>();
         merchantRepository.findAll(spec, pageable).forEach(merchant -> response.add(merchantMapper.toMerchantResponse(merchant)));
         return response;
     }

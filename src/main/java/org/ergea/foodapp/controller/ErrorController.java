@@ -1,6 +1,6 @@
 package org.ergea.foodapp.controller;
 
-import jakarta.validation.ConstraintViolationException;
+import javax.validation.ConstraintViolationException;
 import org.ergea.foodapp.dto.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ public class ErrorController {
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<BaseResponse<String>> apiException(ResponseStatusException exception) {
-        return ResponseEntity.status(exception.getStatusCode())
-                .body(BaseResponse.failure(exception.getStatusCode().value(), exception.getReason()));
+        return ResponseEntity.status(exception.getRawStatusCode())
+                .body(BaseResponse.failure(exception.getRawStatusCode(), exception.getReason()));
     }
 }

@@ -67,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderResponse> findAll() {
-        var response = new ArrayList<OrderResponse>();
+        List<OrderResponse> response = new ArrayList<OrderResponse>();
         orderRepository.findAll().forEach(order -> {
             log.info("ORDER {}", order);
             response.add(orderMapper.toOrderResponse(order));

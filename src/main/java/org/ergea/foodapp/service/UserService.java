@@ -3,6 +3,8 @@ package org.ergea.foodapp.service;
 import org.ergea.foodapp.dto.UserRequest;
 import org.ergea.foodapp.dto.UserResponse;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 import java.util.UUID;

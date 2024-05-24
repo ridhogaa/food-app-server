@@ -1,9 +1,10 @@
 package org.ergea.foodapp.serviceimpl;
 
-import jakarta.persistence.criteria.Predicate;
+import javax.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.ergea.foodapp.dto.ProductRequest;
 import org.ergea.foodapp.dto.ProductResponse;
+import org.ergea.foodapp.dto.UserResponse;
 import org.ergea.foodapp.entity.Merchant;
 import org.ergea.foodapp.entity.Product;
 import org.ergea.foodapp.entity.User;
@@ -66,7 +67,7 @@ public class ProductServiceImpl implements ProductService {
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
-        var response = new ArrayList<ProductResponse>();
+        List<ProductResponse> response = new ArrayList<ProductResponse>();
         productRepository.findAll(spec, pageable).forEach(
                 product -> {
                     log.info("PRODUCT : {}", product);

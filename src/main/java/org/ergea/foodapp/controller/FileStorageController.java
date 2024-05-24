@@ -2,7 +2,7 @@ package org.ergea.foodapp.controller;
 
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.ergea.foodapp.dto.BaseResponse;
 import org.ergea.foodapp.dto.UploadFileResponse;
