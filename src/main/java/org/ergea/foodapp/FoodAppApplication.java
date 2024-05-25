@@ -1,5 +1,6 @@
 package org.ergea.foodapp;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.ergea.foodapp.config.FileStorageProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,6 +10,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties({
         FileStorageProperties.class
 })
+@OpenAPIDefinition
 public class FoodAppApplication {
 
     public static void main(String[] args) {

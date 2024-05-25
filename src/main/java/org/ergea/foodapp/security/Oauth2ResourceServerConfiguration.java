@@ -12,6 +12,19 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 @EnableGlobalMethodSecurity(securedEnabled = true) //secure definition
 public class Oauth2ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
+    private static final String[] WHITE_LIST_URL = {
+            "/v2/api-docs",
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/webjars/**",
+            "/swagger-ui/**",
+            "/error**",
+            "/v1/auth/**",
+            "/v1/auth",
+            "/oauth/authorize**",
+            "/error**"
+    };
+
     /**
      * Manage resource server.
      */
@@ -31,8 +44,7 @@ public class Oauth2ResourceServerConfiguration extends ResourceServerConfigurerA
                 .disable()
                 .antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("/", "/v1/auth/**", "/showFile/**", "/v1/showFile/**", "/v1/upload", "/user-register/**", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/user-login/**",
-                        "/forget-password/**", "/oauth/authorize**", "/login**", "/error**")
+                .antMatchers(WHITE_LIST_URL)
                 .permitAll()
                 .antMatchers("/v1/role-test-global/list-barang").hasAnyAuthority("ROLE_READ")
                 .antMatchers("/v1/role-test-global/post-barang").hasAnyAuthority("ROLE_WRITE")

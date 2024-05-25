@@ -11,14 +11,13 @@ import javax.validation.constraints.Size;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
-    @NotEmpty(message = "must not empty")
-    @Size(min = 6, max = 8, message = "must between 6-8 Characters")
-    private String username;
-    @NotEmpty(message = "must not empty")
+public class ResetPasswordRequest {
+    @NotEmpty(message = "Must not empty")
     @Email
     private String emailAddress;
-    @NotEmpty(message = "must not empty")
+    @NotEmpty(message = "Must not empty")
+    private String otp;
+    @NotEmpty(message = "Must not empty")
     @Size(min = 6, max = 8, message = "must between 6-8 Characters")
-    private String password;
+    private String newPassword;
 }

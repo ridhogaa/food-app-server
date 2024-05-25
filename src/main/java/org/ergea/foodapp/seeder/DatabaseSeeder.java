@@ -147,6 +147,7 @@ public class DatabaseSeeder implements ApplicationRunner {
             if (null == oldUser) {
                 oldUser = new User();
                 oldUser.setUsername(username);
+                oldUser.setEmailAddress(username);
                 oldUser.setPassword(password);
                 List<Role> r = roleRepository.findByNameIn(roleNames);
                 oldUser.setRoles(r);
