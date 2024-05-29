@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.ergea.foodapp.dto.base.BaseResponse;
+import org.ergea.foodapp.service.InvoiceService;
 import org.ergea.foodapp.serviceimpl.InvoiceServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ import java.util.UUID;
 public class InvoiceController {
 
     @Autowired
-    private InvoiceServiceImpl invoiceService;
+    private InvoiceService invoiceService;
 
     @Autowired
     private HttpServletResponse response;

@@ -2,6 +2,7 @@ package org.ergea.foodapp.serviceimpl;
 
 import javax.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
+import org.ergea.foodapp.config.Config;
 import org.ergea.foodapp.dto.ProductRequest;
 import org.ergea.foodapp.dto.ProductResponse;
 import org.ergea.foodapp.dto.UserResponse;
@@ -41,6 +42,9 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductMapper productMapper;
 
+    @Autowired
+    private Config config;
+
     @Override
     public ProductResponse create(ProductRequest request) {
         validationService.validate(request);
@@ -48,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
         product.setName(request.getName());
         product.setPrice(request.getPrice());
         product.setName(request.getName());
-        Merchant merchant = merchantRepository.findById(request.getMerchantId())
+        Merchant merchant = merchantRepository.findById(config.isValidUUID(request.getMerchantId()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Merchant not found with id " + request.getMerchantId()));
         product.setMerchant(merchant);
         productRepository.save(product);

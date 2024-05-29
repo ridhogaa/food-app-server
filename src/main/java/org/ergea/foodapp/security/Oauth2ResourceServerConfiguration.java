@@ -1,11 +1,14 @@
 package org.ergea.foodapp.security;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.web.server.ResponseStatusException;
 
 @Configuration
 @EnableResourceServer
@@ -44,10 +47,16 @@ public class Oauth2ResourceServerConfiguration extends ResourceServerConfigurerA
                 .authorizeRequests()
                 .antMatchers(WHITE_LIST_URL)
                 .permitAll()
-                .antMatchers("/v1/role-test-global/list-barang").hasAnyAuthority("ROLE_READ")
-                .antMatchers("/v1/role-test-global/post-barang").hasAnyAuthority("ROLE_WRITE")
-                .antMatchers("/v1/role-test-global/post-barang-user").hasAnyAuthority("ROLE_USER")
-                .antMatchers("/v1/role-test-global/post-barang-admin").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers(HttpMethod.POST, "/v1/merchants").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers(HttpMethod.PUT, "/v1/merchants").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/v1/merchants").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers(HttpMethod.POST, "/v1/products").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers(HttpMethod.PUT, "/v1/products").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/v1/products").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers(HttpMethod.PUT, "/v1/users").hasAnyAuthority("ROLE_USER")
+                .antMatchers(HttpMethod.POST, "/v1/users").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/v1/users").hasAnyAuthority("ROLE_ADMIN")
+                .antMatchers(HttpMethod.GET, "/v1/users").hasAnyAuthority("ROLE_ADMIN")
                 .and()
                 .authorizeRequests()
                 .anyRequest()

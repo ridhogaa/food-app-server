@@ -17,5 +17,5 @@ public class ProductRequest {
     @NotNull(message = "Must not empty")
     private Double price;
     @NotNull(message = "Must not empty")
-    private UUID merchantId;
+    private String merchantId;
 }

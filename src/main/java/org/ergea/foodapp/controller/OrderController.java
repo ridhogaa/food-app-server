@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.UUID;
 
 @Tag(name = "Order")
@@ -21,8 +22,8 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody OrderRequest request) {
-        return ResponseEntity.ok(BaseResponse.success(orderService.create(request), "Success Create Order"));
+    public ResponseEntity<?> create(@RequestBody OrderRequest request, Principal principal) {
+        return ResponseEntity.ok(BaseResponse.success(orderService.create(request, principal), "Success Create Order"));
     }
 
     @GetMapping

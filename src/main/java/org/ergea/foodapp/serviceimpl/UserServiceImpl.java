@@ -14,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,13 +37,16 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private PasswordEncoder encoder;
+
     @Override
     public UserResponse create(UserRequest userRequest) {
         validationService.validate(userRequest);
         User user = new User();
         user.setUsername(userRequest.getUsername());
         user.setEmailAddress(userRequest.getEmailAddress());
-        user.setPassword(userRequest.getPassword());
+        user.setPassword(encoder.encode(userRequest.getPassword()));
 
         if (userRepository.existsByEmailAddress(userRequest.getEmailAddress())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exist");
@@ -76,10 +81,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse update(UUID id, UserRequest request) {
+    public UserResponse update(Principal principal, UserRequest request) {
         validationService.validate(request);
         log.info("REQUEST : {}", request);
-        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID User not found"));
+        User user = userRepository.findByUsername(principal.getName());
 
         if (userRepository.existsByEmailAddress(request.getEmailAddress())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exist");
@@ -98,7 +103,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (Objects.nonNull(request.getPassword())) {
-            user.setPassword(request.getPassword());
+            user.setPassword(encoder.encode(request.getPassword()));
         }
 
         userRepository.save(user);

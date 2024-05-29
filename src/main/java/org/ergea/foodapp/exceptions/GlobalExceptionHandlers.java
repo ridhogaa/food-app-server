@@ -1,4 +1,4 @@
-package org.ergea.foodapp.controller;
+package org.ergea.foodapp.exceptions;
 
 import javax.validation.ConstraintViolationException;
 
@@ -6,14 +6,14 @@ import org.ergea.foodapp.dto.base.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedClientException;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Objects;
-
 @RestControllerAdvice
-public class ErrorController {
+public class GlobalExceptionHandlers {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<BaseResponse<String>> constraintViolationException(ConstraintViolationException exception) {
@@ -28,7 +28,7 @@ public class ErrorController {
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<BaseResponse<String>> usernameNotFoundExceptionException(UsernameNotFoundException exception) {
+    public ResponseEntity<BaseResponse<String>> usernameNotFoundException(UsernameNotFoundException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(BaseResponse.failure(HttpStatus.NOT_FOUND.value(), exception.getMessage()));
     }
