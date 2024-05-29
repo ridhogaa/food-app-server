@@ -1,5 +1,6 @@
 package org.ergea.foodapp.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.ergea.foodapp.config.EmailTemplate;
 import org.ergea.foodapp.dto.auth.*;
 import org.ergea.foodapp.dto.base.BaseResponse;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.security.Principal;
 
+@Tag(name = "Auth")
 @RestController
 @RequestMapping("v1/auth")
 public class AuthController {

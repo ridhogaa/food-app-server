@@ -10,7 +10,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties({
         FileStorageProperties.class
 })
-@OpenAPIDefinition
 public class FoodAppApplication {
 
     public static void main(String[] args) {

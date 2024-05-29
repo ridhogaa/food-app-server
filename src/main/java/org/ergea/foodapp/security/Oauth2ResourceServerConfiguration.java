@@ -13,16 +13,14 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 public class Oauth2ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
     private static final String[] WHITE_LIST_URL = {
-            "/v2/api-docs",
-            "/swagger-resources/**",
-            "/swagger-ui.html",
-            "/webjars/**",
-            "/swagger-ui/**",
             "/error**",
             "/v1/auth/**",
             "/v1/auth",
             "/oauth/authorize**",
-            "/error**"
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/v2/api-docs/**",
+            "/swagger-resources/**"
     };
 
     /**
