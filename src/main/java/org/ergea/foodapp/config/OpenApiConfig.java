@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @OpenAPIDefinition(
-        info = @Info(title = "My API", version = "1.0"),
+        info = @Info(title = "My Food API", version = "1.0"),
         security = @SecurityRequirement(name = "bearerAuth"),
         servers = {
                 @Server(description = "dev env",
