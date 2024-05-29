@@ -3,7 +3,10 @@ package org.ergea.foodapp.service;
 import org.ergea.foodapp.dto.UserRequest;
 import org.ergea.foodapp.dto.UserResponse;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,7 +16,7 @@ public interface UserService {
 
     List<UserResponse> findAll(Pageable pageable, String username, String emailAddress);
 
-    UserResponse update(UUID id, UserRequest request);
+    UserResponse update(Principal principal, UserRequest request);
 
     UserResponse delete(UUID id);
 

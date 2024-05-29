@@ -1,4 +1,4 @@
-package org.ergea.foodapp.dto;
+package org.ergea.foodapp.dto.base;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

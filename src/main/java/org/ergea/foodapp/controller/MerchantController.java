@@ -1,7 +1,7 @@
 package org.ergea.foodapp.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.ergea.foodapp.dto.BaseResponse;
+import org.ergea.foodapp.dto.base.BaseResponse;
 import org.ergea.foodapp.dto.MerchantRequest;
 import org.ergea.foodapp.service.MerchantService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.UUID;
 
 @Tag(name = "Merchant")

@@ -1,12 +1,12 @@
 package org.ergea.foodapp.serviceimpl;
 
-import jakarta.persistence.criteria.Predicate;
 import lombok.extern.slf4j.Slf4j;
 import org.ergea.foodapp.dto.MerchantRequest;
 import org.ergea.foodapp.dto.MerchantResponse;
 import org.ergea.foodapp.entity.Merchant;
 import org.ergea.foodapp.mapper.MerchantMapper;
 import org.ergea.foodapp.repository.MerchantRepository;
+import org.ergea.foodapp.repository.UserRepository;
 import org.ergea.foodapp.service.MerchantService;
 import org.ergea.foodapp.service.ValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -55,7 +56,7 @@ public class MerchantServiceImpl implements MerchantService {
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         });
-        var response = new ArrayList<MerchantResponse>();
+        List<MerchantResponse> response = new ArrayList<MerchantResponse>();
         merchantRepository.findAll(spec, pageable).forEach(merchant -> response.add(merchantMapper.toMerchantResponse(merchant)));
         return response;
     }

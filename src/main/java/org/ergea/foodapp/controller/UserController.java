@@ -1,7 +1,7 @@
 package org.ergea.foodapp.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.ergea.foodapp.dto.BaseResponse;
+import org.ergea.foodapp.dto.base.BaseResponse;
 import org.ergea.foodapp.dto.UserRequest;
 import org.ergea.foodapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.UUID;
 
 @Tag(name = "User")
@@ -34,9 +35,9 @@ public class UserController {
         return ResponseEntity.ok(BaseResponse.success(userService.findAll(pageable, username, emailAddress), "Success Get All Users"));
     }
 
-    @PutMapping(path = "{id}")
-    public ResponseEntity<?> update(@PathVariable UUID id, @RequestBody UserRequest request) {
-        return ResponseEntity.ok(BaseResponse.success(userService.update(id, request), "Success Update User"));
+    @PutMapping
+    public ResponseEntity<?> update(Principal principal, @RequestBody UserRequest request) {
+        return ResponseEntity.ok(BaseResponse.success(userService.update(principal, request), "Success Update User"));
     }
 
     @DeleteMapping(path = "{id}")

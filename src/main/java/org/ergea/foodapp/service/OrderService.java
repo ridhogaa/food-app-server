@@ -7,12 +7,13 @@ import org.ergea.foodapp.dto.OrderResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
 public interface OrderService {
 
-    OrderResponse create(OrderRequest request);
+    OrderResponse create(OrderRequest request, Principal principal);
 
     List<OrderResponse> findAll();
 

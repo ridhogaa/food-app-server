@@ -1,11 +1,13 @@
 package org.ergea.foodapp.entity;
 
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ergea.foodapp.entity.base.BaseDate;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,7 +17,8 @@ import java.util.UUID;
 @Table(name = "merchant")
 @NoArgsConstructor
 @Data
-public class Merchant {
+@Where(clause = "deleted_date is null")
+public class Merchant extends BaseDate {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")

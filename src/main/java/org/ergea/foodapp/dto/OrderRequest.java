@@ -1,8 +1,8 @@
 package org.ergea.foodapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +19,4 @@ public class OrderRequest {
     private String destinationAddress;
     @NotNull(message = "must not be null")
     private Boolean isComplete;
-    @NotNull(message = "must not empty")
-    private UUID userId;
 }
