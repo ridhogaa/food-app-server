@@ -1,5 +1,11 @@
 package org.ergea.foodapp.serviceimpl;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.oauth2.Oauth2;
+import com.google.api.services.oauth2.model.Userinfoplus;
 import org.ergea.foodapp.config.Config;
 import org.ergea.foodapp.config.EmailSender;
 import org.ergea.foodapp.config.EmailTemplate;
@@ -24,10 +30,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 
@@ -47,6 +55,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Value("${BASEURL}")
     private String baseUrl;
+
+    @Value("${AUTHURL}")
+    private String authUrl;
 
     @Autowired
     private RestTemplateBuilder restTemplateBuilder;
@@ -93,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
 
     public LoginResponse login(LoginRequest request) {
         validationService.validate(request);
-        User checkUser = userRepository.findByUsername(request.getUsername());
+        User checkUser = userRepository.findByEmailAddress(request.getEmailAddress());
 
         if ((checkUser != null) && (encoder.matches(request.getPassword(), checkUser.getPassword()))) {
             if (!checkUser.isEnabled()) {
@@ -106,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
         if (!(encoder.matches(request.getPassword(), checkUser.getPassword()))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong password");
         }
-        String url = baseUrl + "/oauth/token?username=" + request.getUsername() +
+        String url = baseUrl + "/oauth/token?username=" + checkUser.getUsername() +
                 "&password=" + request.getPassword() +
                 "&grant_type=password" +
                 "&client_id=my-client-web" +
@@ -117,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
         );
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            User user = userRepository.findByUsername(request.getUsername());
+            User user = userRepository.findByEmailAddress(request.getEmailAddress());
             List<String> roles = new ArrayList<>();
 
             for (Role role : user.getRoles()) {
@@ -218,12 +229,65 @@ public class AuthServiceImpl implements AuthService {
     public User getCurrentUser(Principal principal) {
         try {
             User user = userRepository.findByUsername(principal.getName());
-            if (user == null){
+            if (user == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found");
             }
             return userRepository.save(user);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Found");
         }
+    }
+
+    @Override
+    public Object signWithGoogle(MultiValueMap<String, String> parameters) throws IOException {
+        Map<String, String> map = parameters.toSingleValueMap();
+        String accessToken = map.get("accessToken");
+
+        GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
+        Oauth2 oauth2 = new Oauth2.Builder(new NetHttpTransport(), new JacksonFactory(), credential).setApplicationName("Oauth2").build();
+        Userinfoplus profile;
+        try {
+            profile = oauth2.userinfo().get().execute();
+        } catch (GoogleJsonResponseException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, e.getDetails().getMessage());
+        }
+        profile.toPrettyString();
+        User user = userRepository.findByEmailAddress(profile.getEmail());
+        if (null != user) {
+            if (!user.isEnabled()) {
+                sendEmailOtp(new EmailRequest(user.getEmailAddress()), "Activate Account");
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Your Account is disable. Please chek your email for activation.");
+            }
+
+            String oldPassword = user.getPassword();
+            if (!encoder.matches(profile.getId(), oldPassword)) {
+                user.setPassword(encoder.encode(profile.getId()));
+                userRepository.save(user);
+            }
+
+            String url = authUrl +
+                    "?username=" + user.getUsername() +
+                    "&password=" + profile.getId() +
+                    "&grant_type=password" +
+                    "&client_id=my-client-web" +
+                    "&client_secret=password";
+            System.out.println(url);
+            ResponseEntity<Map> response = restTemplateBuilder.build().exchange(url, HttpMethod.POST, null, new ParameterizedTypeReference<Map>() {
+            });
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                user.setPassword(oldPassword);
+                userRepository.save(user);
+                return authMapper.toLoginResponse(response);
+            }
+        } else {
+//            register
+            return register(new RegisterRequest(
+                    profile.getEmail(),
+                    profile.getEmail(),
+                    profile.getId()
+            ));
+        }
+        return user;
     }
 }

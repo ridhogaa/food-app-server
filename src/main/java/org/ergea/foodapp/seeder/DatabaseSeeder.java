@@ -26,8 +26,6 @@ import java.util.List;
 @Service
 public class DatabaseSeeder implements ApplicationRunner {
 
-    private static final String TAG = "DatabaseSeeder {}";
-
     private Logger logger = LoggerFactory.getLogger(DatabaseSeeder.class);
 
     @Autowired
