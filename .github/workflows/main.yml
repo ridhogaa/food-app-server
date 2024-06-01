@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -22,13 +22,13 @@ jobs:
         run: mvn clean package
 
       - name: Build Docker image
-        run: docker build -t your-docker-repo/your-app:latest .
+        run: docker build -t your-docker-repo/food-app:latest .
 
       - name: Login to DockerHub
         run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Push Docker image
-        run: docker push your-docker-repo/your-app:latest
+        run: docker push your-docker-repo/food-app:latest
 
       - name: Deploy to Render
         env:
