@@ -32,5 +32,8 @@ build/
 ### VS Code ###
 .vscode/
 
-!**/src/main/resources/application-dev.properties
-!**/src/main/resources/client_secret.json
+# Ignore application.properties
+src/main/resources/application-dev.properties
+
+# Ignore client secret file
+src/main/resources/client_secret.json
