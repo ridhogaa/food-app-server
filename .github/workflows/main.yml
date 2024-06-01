@@ -44,9 +44,11 @@ jobs:
       - name: Build with Maven
         run: mvn clean install -DskipTests  # Builds your project and skips tests
 
+      - name: Install Railway CLI
+        run: npm install -g railway
+
+      - name: Login to Railway
+        run: railway login --apiKey ${{ secrets.RAILWAY_API_KEY }}
+
       - name: Deploy to Railway
-        uses: railwayapp/actions@v1.1
-        with:
-          apiKey: ${{ secrets.RAILWAY_API_KEY }}
-          projectId: ${{ secrets.RAILWAY_PROJECT_ID }}
-          environmentId: ${{ secrets.RAILWAY_ENVIRONMENT_ID }}
+        run: railway up --environment production
