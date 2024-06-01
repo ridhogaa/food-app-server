@@ -19,8 +19,8 @@ jobs:
           - 5432:5432
         env:
           POSTGRES_DB: db_food
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 1234
+          POSTGRES_USER: db_food_owner
+          POSTGRES_PASSWORD: G9QRtqyu0NJV
 
     steps:
       - name: Checkout code
@@ -32,41 +32,24 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
 
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          until pg_isready --host=localhost --port=5432 --username=postgres; do
-            echo "Waiting for PostgreSQL to be ready..."
-            sleep 2
-          done
-
       - name: Build with Maven
         run: mvn clean install
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/db_food
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: 1234
+          SPRING_DATASOURCE_URL: jdbc:postgresql://ep-blue-surf-a1nvsrm7.ap-southeast-1.aws.neon.tech/db_food?user=db_food_owner&password=G9QRtqyu0NJV&sslmode=require
+          SPRING_DATASOURCE_USERNAME: db_food_owner
+          SPRING_DATASOURCE_PASSWORD: G9QRtqyu0NJV
 
       - name: Run tests
         run: mvn test
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/db_food
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: 1234
+          SPRING_DATASOURCE_URL: jdbc:postgresql://ep-blue-surf-a1nvsrm7.ap-southeast-1.aws.neon.tech/db_food?user=db_food_owner&password=G9QRtqyu0NJV&sslmode=require
+          SPRING_DATASOURCE_USERNAME: db_food_owner
+          SPRING_DATASOURCE_PASSWORD: G9QRtqyu0NJV
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
 
-    services:
-      postgres:
-        image: postgres:13
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_DB: db_food
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 1234
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -77,42 +60,18 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
 
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          until pg_isready --host=localhost --port=5432 --username=postgres; do
-            echo "Waiting for PostgreSQL to be ready..."
-            sleep 2
-          done
-
       - name: Build with Maven
         run: mvn clean install
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/db_food
+          SPRING_DATASOURCE_URL: jdbc:postgresql://ep-blue-surf-a1nvsrm7.ap-southeast-1.aws.neon.tech/db_food?user=db_food_owner&password=G9QRtqyu0NJV&sslmode=require
           SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: 1234
+          SPRING_DATASOURCE_PASSWORD: G9QRtqyu0NJV
 
-      - name: Run tests
-        run: mvn test
-        env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/db_food
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: 1234
+      - name: Build Docker image
+        run: docker build -t food-app/food-app:latest.
 
-      - name: Copy files to remote server
-        run: |
-          scp -o StrictHostKeyChecking=no -r target/your-app.jar your-user@your-server-ip:/path/to/deployment/
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: Start application on remote server
-        run: |
-          ssh -o StrictHostKeyChecking=no your-user@your-server-ip 'bash -s' <<'ENDSSH'
-          pkill -f 'java -jar' || true
-          nohup java -jar /path/to/deployment/your-app.jar > app.log 2>&1 &
-          ENDSSH
-
-      - name: Download ngrok
-        run: curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list && sudo apt update && sudo apt install ngrok
-
-      - name: Start ngrok tunnel
-        run: ngrok http 8080 --authtoken ${{ secrets.NGROK_AUTHTOKEN }} --log=stdout --log-format logfmt &
-        env:
-          NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+      - name: Push Docker image
+        run: docker push food-app/food-app:latest
