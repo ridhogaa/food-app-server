@@ -5,7 +5,7 @@ FROM openjdk:11-jre-slim
 WORKDIR /app
 
 # Copy the application's jar to the container
-COPY target/your-app.jar app.jar
+COPY target/food-app.jar app.jar
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
