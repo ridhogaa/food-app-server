@@ -75,8 +75,7 @@ public class OrderServiceImpl implements OrderService {
                 url,
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {
-                }
+                new ParameterizedTypeReference<>() {}
         );
 
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -148,13 +147,14 @@ public class OrderServiceImpl implements OrderService {
 //        Product product = productRepository.findById(config.isValidUUID(request.getProductId())).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found with id " + request.getProductId()));
 //        orderDetail.setProduct(product);
         RestTemplate restTemplate = new RestTemplate();
-        String url = baseUrlMaster + "v1/products/" + request.getProductId();
+        String url = baseUrlProducts + "v1/products/" + request.getProductId();
         // Make the request
         ResponseEntity<BaseResponse<Map<String, Object>>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {}
+                new ParameterizedTypeReference<>() {
+                }
         );
         if (response.getStatusCode() == HttpStatus.OK) {
             log.info("{}", response.getBody());
