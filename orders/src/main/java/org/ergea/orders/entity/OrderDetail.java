@@ -29,7 +29,7 @@ public class OrderDetail extends BaseDate {
     private Order order;
 
     @Column(name = "product_id")
-    private UUID productId;
+    private String productId;
 
     @Column(name = "quantity")
     private Integer quantity;

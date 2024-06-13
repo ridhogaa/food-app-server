@@ -32,6 +32,9 @@ public class SpringCloudConfig {
                 .route(r -> r.path("/api/v1/invoice/**")
                         .uri("http://localhost:8083")
                         .id("invoice"))
+                .route(r -> r.path("/api/v1/kafka/registry/**")
+                        .uri("http://localhost:8083")
+                        .id("kafka"))
                 .build();
     }
 

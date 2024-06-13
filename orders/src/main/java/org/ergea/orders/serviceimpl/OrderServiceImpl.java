@@ -51,8 +51,11 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private Config config;
 
-    @Value("${BASEURL8080}")
-    private String baseUrl;
+    @Value("${BASEURL8081}")
+    private String baseUrlMaster;
+
+    @Value("${BASEURL8082}")
+    private String baseUrlProducts;
 
     @Override
     public OrderResponse create(OrderRequest request, String jwtToken) {
@@ -66,17 +69,14 @@ public class OrderServiceImpl implements OrderService {
         List<ClientHttpRequestInterceptor> interceptors = restTemplateWithJwt.getInterceptors();
         interceptors.add(new JwtInterceptor(jwtToken));
         restTemplateWithJwt.setInterceptors(interceptors);
-        String url = baseUrl + "v1/auth";
-        ParameterizedTypeReference<BaseResponse<Map<String, Object>>> responseType =
-                new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {
-                };
-
+        String url = baseUrlMaster + "v1/auth";
         // Make the request
         ResponseEntity<BaseResponse<Map<String, Object>>> response = restTemplateWithJwt.exchange(
                 url,
                 HttpMethod.GET,
                 null,
-                responseType
+                new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {
+                }
         );
 
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -147,9 +147,23 @@ public class OrderServiceImpl implements OrderService {
 
 //        Product product = productRepository.findById(config.isValidUUID(request.getProductId())).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found with id " + request.getProductId()));
 //        orderDetail.setProduct(product);
+        RestTemplate restTemplate = new RestTemplate();
+        String url = baseUrlMaster + "v1/products/" + request.getProductId();
+        // Make the request
+        ResponseEntity<BaseResponse<Map<String, Object>>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<BaseResponse<Map<String, Object>>>() {}
+        );
+        if (response.getStatusCode() == HttpStatus.OK) {
+            log.info("{}", response.getBody());
+            orderDetail.setProductId((String) Objects.requireNonNull(response.getBody()).getData().get("id"));
+            orderDetailRepository.save(orderDetail);
+            return orderMapper.toOrderDetailResponse(orderDetail);
+        }
 
-        orderDetailRepository.save(orderDetail);
+        return null;
 
-        return orderMapper.toOrderDetailResponse(orderDetail);
     }
 }
