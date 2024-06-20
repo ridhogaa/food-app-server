@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
@@ -57,6 +58,7 @@ public class OrderServiceImpl implements OrderService {
     private Config config;
 
     @Override
+    @Transactional
     public OrderResponse create(OrderRequest request, Principal principal) {
         validationService.validate(request);
         Order order = new Order();
@@ -80,6 +82,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderResponse update(UUID id, OrderRequest request) {
         validationService.validate(request);
 
@@ -103,6 +106,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderResponse delete(UUID id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID Order not found"));
         orderRepository.delete(order);
@@ -115,6 +119,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderDetailResponse createDetail(OrderDetailRequest request) {
         validationService.validate(request);
 

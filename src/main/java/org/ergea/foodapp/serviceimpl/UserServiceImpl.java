@@ -16,6 +16,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
@@ -41,6 +42,7 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder encoder;
 
     @Override
+    @Transactional
     public UserResponse create(UserRequest userRequest) {
         validationService.validate(userRequest);
         User user = new User();
@@ -81,6 +83,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse update(Principal principal, UserRequest request) {
         validationService.validate(request);
         log.info("REQUEST : {}", request);
@@ -112,6 +115,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse delete(UUID id) {
         User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID User not found"));
         userRepository.delete(user);

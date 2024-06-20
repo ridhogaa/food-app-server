@@ -30,6 +30,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -80,6 +81,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private Oauth2UserDetailService userDetailsService;
 
+    @Transactional
     public User register(RegisterRequest request) {
         validationService.validate(request);
         String[] roleNames = {"ROLE_USER", "ROLE_READ", "ROLE_WRITE"}; // admin
@@ -102,6 +104,7 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public LoginResponse login(LoginRequest request) {
         validationService.validate(request);
         User checkUser = userRepository.findByEmailAddress(request.getEmailAddress());
@@ -142,6 +145,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public Object sendEmailOtp(EmailRequest request, String subject) {
         validationService.validate(request);
         String message = "Thanks, please check your email for activation.";
@@ -239,6 +243,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public Object signWithGoogle(MultiValueMap<String, String> parameters) throws IOException {
         Map<String, String> map = parameters.toSingleValueMap();
         String accessToken = map.get("accessToken");

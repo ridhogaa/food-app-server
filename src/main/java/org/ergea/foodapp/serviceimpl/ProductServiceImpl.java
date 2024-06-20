@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ public class ProductServiceImpl implements ProductService {
     private Config config;
 
     @Override
+    @Transactional
     public ProductResponse create(ProductRequest request) {
         validationService.validate(request);
         Product product = new Product();
@@ -82,6 +84,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductResponse update(UUID id, ProductRequest request) {
         validationService.validate(request);
         log.info("REQUEST : {}", request);
@@ -103,6 +106,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductResponse delete(UUID id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID Product not found"));
         productRepository.delete(product);
