@@ -42,7 +42,6 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder encoder;
 
     @Override
-    @Transactional
     public UserResponse create(UserRequest userRequest) {
         validationService.validate(userRequest);
         User user = new User();

@@ -36,7 +36,6 @@ public class MerchantServiceImpl implements MerchantService {
     private MerchantMapper merchantMapper;
 
     @Override
-    @Transactional
     public MerchantResponse create(MerchantRequest request) {
         validationService.validate(request);
         Merchant merchant = new Merchant();

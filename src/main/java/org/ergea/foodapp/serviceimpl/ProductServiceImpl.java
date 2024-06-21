@@ -47,7 +47,6 @@ public class ProductServiceImpl implements ProductService {
     private Config config;
 
     @Override
-    @Transactional
     public ProductResponse create(ProductRequest request) {
         validationService.validate(request);
         Product product = new Product();

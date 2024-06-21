@@ -58,7 +58,6 @@ public class OrderServiceImpl implements OrderService {
     private Config config;
 
     @Override
-    @Transactional
     public OrderResponse create(OrderRequest request, Principal principal) {
         validationService.validate(request);
         Order order = new Order();
