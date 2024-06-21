@@ -1,14 +1,20 @@
 package org.ergea.foodapp.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.web.server.ResponseStatusException;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableResourceServer
@@ -57,6 +63,20 @@ public class Oauth2ResourceServerConfiguration extends ResourceServerConfigurerA
                 .antMatchers(HttpMethod.POST, "/v1/users").hasAnyAuthority("ROLE_ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/v1/users").hasAnyAuthority("ROLE_ADMIN")
                 .antMatchers(HttpMethod.GET, "/v1/users").hasAnyAuthority("ROLE_ADMIN")
+                .and()
+                .exceptionHandling().authenticationEntryPoint((request, response, authException) -> {
+                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+                    final Map<String, Object> body = new HashMap<>();
+                    body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
+                    body.put("error", "Unauthorized");
+                    body.put("message", authException.getMessage());
+                    body.put("path", request.getServletPath());
+
+                    final ObjectMapper mapper = new ObjectMapper();
+                    mapper.writeValue(response.getOutputStream(), body);
+                })
                 .and()
                 .authorizeRequests()
                 .anyRequest()
