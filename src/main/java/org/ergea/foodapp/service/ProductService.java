@@ -18,4 +18,6 @@ public interface ProductService {
     ProductResponse delete(UUID id);
 
     ProductResponse findById(UUID id);
+
+    List<ProductResponse> findByPromo(Double priceThreshold);
 }

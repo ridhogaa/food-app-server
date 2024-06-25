@@ -1,6 +1,7 @@
 package org.ergea.foodapp.serviceimpl;
 
 import javax.persistence.criteria.Predicate;
+
 import lombok.extern.slf4j.Slf4j;
 import org.ergea.foodapp.config.Config;
 import org.ergea.foodapp.dto.ProductRequest;
@@ -116,5 +117,17 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse findById(UUID id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ID Product not found"));
         return productMapper.toProductResponse(product);
+    }
+
+    @Override
+    public List<ProductResponse> findByPromo(Double priceThreshold) {
+        List<ProductResponse> response = new ArrayList<ProductResponse>();
+        productRepository.findPromotionalProducts(priceThreshold).forEach(
+                product -> {
+                    log.info("PRODUCT : {}", product);
+                    response.add(productMapper.toProductResponse(product));
+                }
+        );
+        return response;
     }
 }
