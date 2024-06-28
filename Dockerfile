@@ -1,15 +1,4 @@
-FROM ubuntu:latest
-LABEL authors="ridhogymnastiar"
-
-# Use a base image with JDK 17
-FROM openjdk:17-jdk-alpine
-
-# Set the working directory
-WORKDIR /opt/api
-
-# Copy the Spring Boot JAR file into the container (adjust the path and filename as necessary)
-COPY target/*.jar app.jar
-
-# Define the command to run the application
-ENTRYPOINT ["java", "-jar", "-Xms64m", "app.jar"]
-
+FROM amazoncorretto:17
+WORKDIR /app
+COPY /target/FoodApp-0.0.1-SNAPSHOT.jar /app
+ENTRYPOINT ["java", "-jar", "FoodApp-0.0.1-SNAPSHOT.jar"]

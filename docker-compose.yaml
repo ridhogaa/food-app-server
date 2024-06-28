@@ -1,18 +1,6 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:14
-    container_name: postgres
-    environment:
-      POSTGRES_DB: db_food
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1234
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   kafka:
     image: confluentinc/cp-kafka:7.2.1
     container_name: kafka
@@ -35,17 +23,18 @@ services:
       - "2181:2181"
 
   app:
-    build: .
-    container_name: spring-boot-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: food-app
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db_food
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/db_food
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 1234
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     depends_on:
-      - postgres
       - kafka
 
 volumes:
